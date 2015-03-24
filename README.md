@@ -1,7 +1,7 @@
 # crypto-bbs
 Encrypted Anonymous BBS (work in progress)
 
-This Django 1.7 project implements a flexible and easily extensible BBS with RESTful API for posting and retrieving via AJAJ calls.
+This Django 1.7 project implements a flexible and easily extensible BBS with RESTful API (via Django REST Framework) for posting and retrieving via AJAJ calls.
 
 To-Do:
 
