@@ -1,0 +1,55 @@
+{% extends "bbs/base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="jumbotron default">
+      {% if object %}
+      <!-- <h1>Hello, Stranger.</h1> -->
+      <h4>Board: {{ object.key }}</br>
+        Started: {{ object.date }} </h4></br>
+      {% for post in object.posts.all %}
+        <b>{{ post.date }}:</b> {{ post.text }}</br>
+      {% empty %}
+        Nothing here yet.
+      {% endfor %}
+      {% else %}
+      <h1>Hello, Stranger.</h1>
+      {% endif %}
+    </div>
+    <div id="response"></div>
+    <div id="posting" class="panel panel-body">
+    <form id="postForm" role="form" autocomplete="off" action="{% url 'post-api' %}" method="post">
+    {% csrf_token %}
+    <textarea name="text" class="form-control editor" type="text" autocomplete="off" rows="3"></textarea>
+    <input id="key" name="key" type="hidden" class="form-control" value="{{ object.key }}">
+    <button id="makePost" type="submit" class="btn btn-primary">Post</button>
+    </div>
+</div>
+</form>
+</div>
+
+<script>
+
+$(function() {
+  $('#postForm').submit(function() { // catch the form's submit event
+    $.ajax({ // create an AJAX call...
+      data: $(this).serialize(), // get the form data
+      type: $(this).attr('method'), // GET or POST
+      url: $(this).attr('action'), // the file to call
+      success: function(response) { // on success..
+        $('#response').addClass('alert alert-success'); // Make the response look nice.
+        $('#response').html(response); // update the DIV
+        location.reload();
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) { // on error..
+        response = "ERROR: " + JSON.parse(XMLHttpRequest.responseText);
+        $('#response').addClass('alert alert-danger'); // Make the response look nice.
+        $('#response').html(response); // update the DIV
+      }
+    });
+    return false; // cancel original event to prevent form submitting
+  });
+});
+</script>
+{% endblock %}

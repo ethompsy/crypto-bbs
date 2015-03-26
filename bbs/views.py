@@ -1,5 +1,7 @@
 from django.core.cache import cache
 from django.http import HttpResponse
+from django.views.generic.detail import DetailView
+from django.shortcuts import render
 
 from rest_framework import status, exceptions
 from rest_framework.response import Response
@@ -13,6 +15,19 @@ from bbs.serializers import BoardSerializer, PostSerializer
 import datetime
 from django.utils import timezone
 from django.utils.timezone import utc
+
+def board(request):
+    """Load the template"""
+    return render(request, 'bbs/board.html')
+
+class BoardDetailView(DetailView):
+    """Board Detail View"""
+    model = Board
+    template_name = "bbs/board.html"
+    def get_object(self, *args, **kwargs):
+        pk = self.kwargs['pk']
+        obj = get_board_or_make_one(pk)
+        return obj
 
 # ENDPOINT VIEWS
 
@@ -44,13 +59,18 @@ def boardAPI(request, *args, **kwargs):
         msg = "HTTP METHOD NOT ALLOWED: " + request.method
         return Response(msg, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POST',])
+@api_view(['GET','POST',])
+@renderer_classes([JSONRenderer])
 def postAPI(request, *args, **kwargs):
     """
     API endpoint for saving Post objects
     """
     if request.method == 'POST':
         return create_post(request, *args, **kwargs)
+    elif request.method == 'GET':
+        queryset = Post.objects.all()
+        serializer = PostSerializer(queryset, many=True)
+        return Response(serializer.data)
     else:
         msg = "HTTP METHOD NOT ALLOWED: " + request.method
         return Response(msg, status=status.HTTP_400_BAD_REQUEST)

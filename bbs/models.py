@@ -5,7 +5,7 @@ from django.db import models
 from django.core.cache import cache
 
 class Board(models.Model):
-    key = models.TextField(blank=True)
+    key = models.TextField()
     date = models.DateTimeField('created', auto_now_add=True)
     def __unicode__(self):
         return self.key
@@ -16,7 +16,7 @@ class Board(models.Model):
 class Post(models.Model):
     board = models.ForeignKey(Board, related_name='posts')
     date = models.DateTimeField('posted', auto_now_add=True)
-    text = models.TextField(blank=True)
+    text = models.TextField()
     def __unicode__(self):
         return self.date
     class Meta:
